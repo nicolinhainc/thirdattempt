@@ -1,0 +1,17 @@
+%pwd  
+
+%cd '/content'
+
+!wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=12yk9kJzY-8T68cvkes_YtKsBfjwk4WYk' -O ./Bet-n-dcm2nii.zip
+!unzip -q ./Bet-n-dcm2nii.zip
+!rm -rf images
+
+!wget --no-check-certificate 'https://drive.google.com/uc?export=download&id=1MqEWwsrYvG1Dqdez1F2kRbfcLGTagFJl' -O ./LGGtestpat.zip
+!unzip -q ./LGGtestpat
+!rm -rf _MACOSX
+!rm -rf LGGtestpat/.DS_Store
+!rm -rf LGGtestpat/S2/.DS_Store
+!rm -rf LGGtestpat/S3/.DS_Store
+
+!wget --no-check-certificate 'https://drive.google.com/uc?export=download&id=1kavgY_XtJ2xffCLpjzO1adl2nbYfxrS4' -O ./icbm152t2.zip
+!unzip -q ./icbm152t2.zip
