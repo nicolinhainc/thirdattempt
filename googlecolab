@@ -13,7 +13,7 @@
 !rm -rf LGGtestpat/S2/.DS_Store
 !rm -rf LGGtestpat/S3/.DS_Store
 
-!wget --no-check-certificate 'https://drive.google.com/uc?export=download&id=1kavgY_XtJ2xffCLpjzO1adl2nbYfxrS4' -O ./icbm152t2.zip
+!wget --no-check-certificate 'https://drive.google.com/uc?export=download&id=1uBQdQIYcA_ACqycw8ofDzD-1G9YwZaRw' -O ./icbm152t2.zip
 !unzip -q ./icbm152t2.zip
 
 NIFTI_PATH = './LGGtestpat'
@@ -34,17 +34,16 @@ for subj in os.listdir(NIFTI_PATH):
         os.system(cmd)
         print (cmd)
         
-        # Next, Register the images to the avg 152 t2 image from MNI
+        
+# Next, Register the images to the avg 152 t2 image from MNI
 for subj in os.listdir(NIFTI_PATH):
     subj_path = os.path.join(NIFTI_PATH, subj)
     print ("Working on " + subj_path)
     series = fnmatch.filter(os.listdir(subj_path), 'N4*')
     for ser in ['T2']:   
-        MNI_file = './LGGtestpat/S3/N4-T2.nii.gz'
+        MNI_file = './icbm_avg_152_t2_tal_lin.nii'
         T2_file =  os.path.join (subj_path, 'N4-T2.nii.gz')
         new_file = os.path.join (subj_path, 'Reg-N4-T2.nii.gz')
         cmd = "./flirt -in %s -ref %s  -out %s" % (T2_file, MNI_file, new_file)
         os.system(cmd)
         print (cmd)
-        
-        #replace the MNI file with a nii.gz version of the 152, then make a new link to this zipped thing above and try it all again.
