@@ -55,3 +55,99 @@ import pandas as pd
 !wget --no-check-certificate 'https://drive.google.com/uc?export=download&id=1z2GmRDDVMbcb1x26jlA9X0M4WAv4-kvA' -O ./TumorSlices.csv
 df = pd.read_csv ('./TumorSlices.csv')
 print (df) 
+
+# below is a cell that I dont completely understand and havent tested yet. Seems to be settings for the next cell.
+
+# create new versions of the T1, GAD, and T2 images that range from 0 to 255, and where the 0 intensity value maps to the 5th percentile value 
+# and 255 maps to the 95th percentile value.
+import imageio
+import nibabel as nib
+import numpy as np
+
+MIN_MR = 20
+
+def rescale_5_95_percentile(image):
+    dims = np.shape(image)
+    image_1d = image.reshape(1, image.size)
+    above = np.where(image_1d>MIN_MR, image_1d, image_1d)
+    if above.size < image_1d.size/2:
+        above = image_1d # avoid bad MIN_MR thresholds
+    sorted_im = np.sort(above, axis = None)
+    
+    start = int(sorted_im.size / 20)  # 20 = 5%
+    end = int(sorted_im.size * 19 / 20) # 95%
+    start_val = sorted_im[start]
+    end_val = sorted_im[end]
+    
+    image = np.maximum(image, start_val) # map values below the start_val to start_val
+    image = np.minimum(image, end_val)   # map values above the end_val to end_val
+    image = image - start_val # subtract the starting intensity
+
+ #   print ("rescaling range " + str(newmin) + " to " + str(histo[1][index]))
+    image = (np.maximum(image, 0) / image.max()) * 255.0
+    return image
+
+def nifti_to_img(red_file, green_file, blue_file, not_dir, yes_dir, startSlice, endSlice, subject):
+### red_ green_ and blue_files are the nifit files that will be combined to go into the PNG
+### not_dir is the direcotry where PNGs are stored if they are not in the (inclusive)
+### range set by startSlice/endSlice
+### yes_dir is where they are stored when they ARE in the range
+### subject is the ID so that we can track where images came from
+
+    try:
+        nifti = nib.load(red_file)
+        nif_header = nifti.header
+        red_image = nifti.get_fdata()
+    except:
+        return 0
+
+    try:
+        if os.path.isfile(green_file):
+            nifti = nib.load(green_file)
+            nif_header = nifti.header
+            green_image = nifti.get_fdata()
+        else:
+            pass
+    except:  # if can't load, then use red image
+        green_image = red_image
+    
+    try:
+        if os.path.isfile(blue_file):
+            nifti = nib.load(blue_file)
+
+            nif_header = nifti.header
+            blue_image = nifti.get_fdata()
+        else:
+            pass
+    except:  # if can't load, then use red image
+        blue_image = red_image
+        
+# now scale the intensity for each image        
+    red_image = rescale_5_95_percentile(red_image)
+    green_image = rescale_5_95_percentile(green_image)
+    blue_image = rescale_5_95_percentile(blue_image)
+# then convert to 8 bits
+    red_image = red_image.astype(np.uint8)     
+    green_image = green_image.astype(np.uint8)     
+    blue_image = blue_image.astype(np.uint8)   
+    
+# get the number of slices
+    dims = np.shape(red_image)
+    zd = dims[2]
+
+    for z in range(0, zd):
+        outname = subject + "-{0:04d}".format(z) + '.png'
+        if z >= startSlice and z <= endSlice:  # this is enhancing
+            out_dir = yes_dir
+        else:
+            out_dir = not_dir
+        outname = os.path.join(out_dir, outname)
+        if not os.path.exists(out_dir):
+            os.makedirs(out_dir)
+        combined = np.dstack((red_image[:,:,z],green_image[:,:,z],
+                              blue_image[:,:,z]))
+## . images come in rotated
+        combined = np.rot90(combined, k=1)
+#        print ('Name: ' + outname)
+        imageio.imwrite(outname, combined)
+    return zd
