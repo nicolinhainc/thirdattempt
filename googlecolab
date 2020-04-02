@@ -47,3 +47,11 @@ for subj in os.listdir(NIFTI_PATH):
         cmd = "./flirt -in %s -ref %s  -out %s" % (T2_file, MNI_file, new_file)
         os.system(cmd)
         print (cmd)
+        
+# then import the excel file which was saved as a .csv  no zip is required        
+        
+import pandas as pd
+
+!wget --no-check-certificate 'https://drive.google.com/uc?export=download&id=1z2GmRDDVMbcb1x26jlA9X0M4WAv4-kvA' -O ./TumorSlices.csv
+df = pd.read_csv ('./TumorSlices.csv')
+print (df) 
