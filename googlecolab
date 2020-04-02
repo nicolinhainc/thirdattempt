@@ -2,7 +2,7 @@
 
 %cd '/content'
 
-!wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=12yk9kJzY-8T68cvkes_YtKsBfjwk4WYk' -O ./Bet-n-dcm2nii.zip
+!wget --no-check-certificate 'https://drive.google.com/uc?export=download&id=1XdwGEqKXeKH1NRhZXxCZo5T8mncwYHCC' -O ./Bet-n-dcm2nii.zip
 !unzip -q ./Bet-n-dcm2nii.zip
 !rm -rf images
 
