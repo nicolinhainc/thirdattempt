@@ -203,7 +203,7 @@ x=Dense(1024,activation='relu')(x) #dense layer 2
 x=Dense(512,activation='relu')(x) #dense layer 3
 preds=Dense(2,activation='softmax')(x) #final layer with softmax activation, for 2 classes
 
-model=Model(inputs=base_model.input,outputs=preds)
+model=Model(inputs=base_model.input,outputs=preds) # to load saved model with weights use model= tensorflow.keras.models.load_model('myLGGtestmodel.h5')
 #specify the inputs
 #specify the outputs
 #now a model has been created based on our architecture
@@ -240,3 +240,5 @@ model.fit_generator(generator=train_generator,
                    steps_per_epoch=step_size_train,
                    epochs=10)
     
+# next cell to save model including newly trained weights
+model.save('myLGGtestmodel.h5') # rename it how you like, it will show up in your directory. I have explained above using a hastag how and where to load the model.
